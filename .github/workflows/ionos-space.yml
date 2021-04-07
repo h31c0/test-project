@@ -1,0 +1,29 @@
+name: IONOS.space
+
+on: [push]
+
+jobs:
+  ionos-space:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Get Ionos Project data
+        uses: ionos-deploy-now/retrieve-project-info-action@v1.0.0
+        id: project
+        with:
+          api-key: ${{ secrets.IONOS_API_KEY }}
+          project: 59e45ee2-916d-4170-bb0e-1a4d64ffd137
+          service-host: api-eu.ionos.space
+      - name: Deploy to IONOS
+        uses: ionos-deploy-now/deploy-to-ionos-action@v1.0.0
+        with:
+          dist-folder: ./
+          project: 59e45ee2-916d-4170-bb0e-1a4d64ffd137
+          storage-quota: ${{ steps.project.outputs.storage-quota }}
+          branch-id: ${{ steps.project.outputs.branch-id }}
+          service-host: api-eu.ionos.space
+          api-key: ${{ secrets.IONOS_API_KEY }}
+          remote-host: ${{ steps.project.outputs.remote-host }}
